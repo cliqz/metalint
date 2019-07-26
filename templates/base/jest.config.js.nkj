@@ -1,0 +1,5 @@
+{{copyrightNotice}}
+
+module.exports = {
+  preset: 'ts-jest',
+};

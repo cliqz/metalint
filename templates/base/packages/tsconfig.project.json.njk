@@ -1,0 +1,10 @@
+{
+  "files": [],
+  "references": [
+{% for package in project.packages %}
+    {
+      "path": "./{{package.name}}/tsconfig.json"
+    },
+{% endfor %}
+  ]
+}

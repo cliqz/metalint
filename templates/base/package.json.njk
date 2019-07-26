@@ -1,0 +1,35 @@
+{
+  "author": "{{project.author}}",
+  "contributors": [
+    "{{project.author}}"
+  ],
+  "license": "{{license.name}}",
+  "homepage": "{{project.homepage}}",
+  "bugs": {
+    "url": "{{project.issues}}"
+  },
+  "private": true,
+  "repository": {
+    "type": "git",
+    "url": "{{project.repository}}"
+  },
+  "workspaces": [
+    "./packages/*"
+  ],
+  "scripts": {
+    "bootstrap": "npx lerna bootstrap",
+    "lint": "lerna run --parallel lint",
+    "watch": "tsc --build ./packages/tsconfig.project.json --watch",
+    "build": "tsc --build ./packages/tsconfig.project.json",
+    "bundle": "lerna run bundle",
+    "test": "lerna run --concurrency 1 test",
+    "clean": "lerna run --parallel clean && lerna clean --yes && rimraf node_modules"
+  },
+  "devDependencies": {
+    "@cliqz/metalint": "^0.0.1"
+    "lerna": "^3.15.0",
+    "prettier": "^1.17.1",
+    "rimraf": "^2.6.3",
+    "yarn": "^1.17.3"
+  }
+}

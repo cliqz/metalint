@@ -1,0 +1,12 @@
+{
+  "extends": "../../tsconfig",
+  "compilerOptions": {
+    "outDir": "dist/es6",
+    "declarationDir": "dist/types",
+    "composite": true
+  },
+  "include": [
+    "src/**/*.ts",
+    "index.ts"
+  ]
+}
