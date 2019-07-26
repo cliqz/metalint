@@ -1,0 +1,36 @@
+{
+  "author": "Cliqz",
+  "contributors": [
+    "Rémi Berson <remi@cliqz.com>"
+  ],
+  "license": "MPL-2.0",
+  "homepage": "https://github.com/cliqz/metalint#readme",
+  "bugs": {
+    "url": "https://github.com/cliqz/metalint/issues"
+  },
+  "private": true,
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:cliqz/metalint.git"
+  },
+  "workspaces": [
+    "./packages/*"
+  ],
+  "scripts": {
+    "bootstrap": "npx lerna bootstrap",
+    "lint": "lerna run --parallel lint",
+    "watch": "tsc --build ./packages/tsconfig.project.json --watch",
+    "build": "tsc --build ./packages/tsconfig.project.json",
+    "bundle": "lerna run bundle",
+    "test": "lerna run --concurrency 1 test",
+    "clean": "lerna run --parallel clean && lerna clean --yes && rimraf node_modules"
+  },
+  "devDependencies": {
+    "lerna": "^3.15.0",
+    "prettier": "^1.17.1",
+    "rimraf": "^2.6.3",
+    "ts-node": "^8.3.0",
+    "typescript": "^3.5.3",
+    "yarn": "^1.17.3"
+  }
+}
