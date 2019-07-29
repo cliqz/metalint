@@ -1,0 +1,15 @@
+{
+  "extends": "../../tsconfig",
+  "compilerOptions": {
+    "outDir": "dist/cjs",
+    "composite": true
+  },
+  "include": [
+    "src/fs-utils.ts",
+    "src/project.ts",
+    "src/licences.ts",
+    "src/rules.ts",
+    "src/rules/*.ts",
+    "index.ts"
+  ]
+}

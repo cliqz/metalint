@@ -1,19 +1,11 @@
 {
   "compilerOptions": {
-    "declaration": true,
-    "sourceMap": true,
-    "target": "ES3",
-    "lib": [
-      "es2015",
-      "es2017",
-      "dom"
-    ],
+    "target": "ESNext",
+    "lib": ["es5", "es6"],
     "allowJs": false,
-    "esModuleInterop": true,
     "moduleResolution": "Node",
-    "module": "esnext",
-    "importHelpers": true,
-    "downlevelIteration": true,
+    "module": "commonjs",
+    "esModuleInterop": true,
     "allowUnreachableCode": false,
     "allowUnusedLabels": false,
     "forceConsistentCasingInFileNames": true,
