@@ -59,6 +59,8 @@ function checkLicenseFile(path: string, content: string, full: string): string |
     console.log(`+ File ${path} is out-dated. Updating...`);
     return full;
   }
+
+  console.log('+ LICENSE is up-to-date!', path);
   return undefined;
 }
 
@@ -82,9 +84,9 @@ function checkLicenseNotice(path: string, content: string, notice: string): stri
     // detect end of notice
     let end = start + 3;
     while (
-      end < content.length && (
-        content.charCodeAt(end) !== 42 && /* '*' */
-        content.charCodeAt(end + 1) !== 47 /* '!' */
+      end < content.length && !(
+        content.charCodeAt(end) === 42 && /* '*' */
+        content.charCodeAt(end + 1) === 47 /* '/' */
       )
     ) {
       end += 1;
@@ -94,30 +96,29 @@ function checkLicenseNotice(path: string, content: string, notice: string): stri
 
     // Either notice does not end, or file contains only notice
     if (end >= content.length) {
-      console.log(`+ 2 File ${path} only consists in a copyright comment?`);
+      console.log(`+ File ${path} only consists in a copyright comment?`);
       if (content.trim() !== notice) {
-        console.log(`+ 3 Header out-dated in ${path}. Updating...`);
-        return notice;
+        console.log(`+ Header out-dated in ${path}. Updating...`);
+        return `${notice}`;
       }
       return undefined;
     }
 
     // Update notice if needed
     if (content.slice(start, end).trim() !== notice) {
-      console.log(`+ 4 Header out-dated in ${path}. Updating...`);
-      return `${notice}\n\n${content.slice(end).trim()}`;
+      console.log(`+ Header out-dated in ${path}. Updating...`);
+      return `${notice}\n\n${content.slice(end).trim()}\n`;
     }
   } else {
     console.log(`+ No copyright notice in ${path}. Adding...`);
-    return `${notice}\n\n${content.trim()}`;
+    return `${notice}\n\n${content.trim()}\n`;
   }
 
-  console.log('Header is up-to-date!', path);
+  console.log('+ Header is up-to-date!', path);
   return undefined;
 }
 
 async function check(path: string, license: License): Promise<void> {
-  console.log('+ checking license in', path, JSON.stringify(path));
   const content = await fs.readFile(path, { encoding: 'utf-8' });
   if (path.endsWith('/LICENSE')) {
     const fix = checkLicenseFile(path, content, license.full);

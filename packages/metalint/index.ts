@@ -26,7 +26,6 @@ async function main() {
   ];
 
   // TODO - make optional
-  console.log('CHECK LICENSE?');
   await checkLicenses(project);
 
   console.log();
