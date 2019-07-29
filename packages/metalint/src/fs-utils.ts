@@ -1,3 +1,11 @@
+/*!
+ * Copyright (c) 2019 Cliqz GmbH. All rights reserved.
+ *
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at https://mozilla.org/MPL/2.0/.
+ */
+
 import { constants, promises as fs } from 'fs';
 import path from 'path';
 
@@ -13,10 +21,6 @@ export async function fileExists(filePath: string): Promise<boolean> {
 }
 
 export async function glob(pattern: string, root: string, ignore?: string[]): Promise<string[]> {
-  if (pattern.endsWith('/') === false) {
-    pattern += '/';
-  }
-
   return new Promise((resolve) => {
     globPattern(
       pattern,
@@ -45,4 +49,3 @@ export async function globs(patterns: string[], root: string, ignore?: string[])
     ...(await Promise.all(patterns.map((pattern) => glob(pattern, root, ignore)))),
   );
 }
-

@@ -1,3 +1,11 @@
+/*!
+ * Copyright (c) 2019 Cliqz GmbH. All rights reserved.
+ *
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at https://mozilla.org/MPL/2.0/.
+ */
+
 import { promises as fs } from 'fs';
 import path from 'path';
 
@@ -114,7 +122,7 @@ async function loadListOfPackages(root: string, lerna: Lerna, npm: Package): Pro
     patterns.push(...lerna.packages);
   }
 
-  return ([] as string[]).concat(...(await globs(patterns, root)));
+  return ([] as string[]).concat(...(await globs(patterns.map(p => p.endsWith('/') === false ? `${p}/` : p), root)));
 }
 
 async function loadPackages(root: string, lerna: Lerna, npm: Package): Promise<Workspace[]> {

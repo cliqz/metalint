@@ -1,5 +1,13 @@
+/*!
+ * Copyright (c) 2019 Cliqz GmbH. All rights reserved.
+ *
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at https://mozilla.org/MPL/2.0/.
+ */
+
 import { promises as fs } from 'fs';
-import path from 'path';
+import { join } from 'path';
 
 import nunjucks from 'nunjucks';
 
@@ -23,7 +31,7 @@ export async function loadLicense({
     return undefined;
   }
 
-  const licenseDir = path.join(__dirname, '..', '..', '..', 'licenses', name);
+  const licenseDir = join(__dirname, '..', '..', '..', 'licenses', name);
   const licenseExists = await fileExists(licenseDir);
 
   if (licenseExists === false) {
@@ -32,8 +40,8 @@ export async function loadLicense({
   }
 
   const [fullTemplate, noticeTemplate] = await Promise.all([
-    fs.readFile(path.join(licenseDir, 'LICENSE.njk'), 'utf-8'),
-    fs.readFile(path.join(licenseDir, 'notice.njk'), 'utf-8'),
+    fs.readFile(join(licenseDir, 'LICENSE.njk'), 'utf-8'),
+    fs.readFile(join(licenseDir, 'notice.njk'), 'utf-8'),
   ]);
 
   return {
@@ -45,10 +53,10 @@ export async function loadLicense({
 /**
  * Make sure that LICENSE file is up-to-date.
  */
-function checkLicenseFile(p: string, content: string, full: string): string | undefined {
+function checkLicenseFile(path: string, content: string, full: string): string | undefined {
   // TODO detect if some sub-package does not have a LICENSE file
   if (content.trim() !== full) {
-    console.log(`+ File ${p} is out-dated. Updating...`);
+    console.log(`+ File ${path} is out-dated. Updating...`);
     return full;
   }
   return undefined;
@@ -57,7 +65,7 @@ function checkLicenseFile(p: string, content: string, full: string): string | un
 /**
  * Make sure that license notice at the top of a source file is up-to-date.
  */
-function checkLicenseNotice(p: string, content: string, notice: string): string | undefined {
+function checkLicenseNotice(path: string, content: string, notice: string): string | undefined {
   let start = 0;
 
   // Skip spaces at the beginning of file
@@ -86,9 +94,9 @@ function checkLicenseNotice(p: string, content: string, notice: string): string 
 
     // Either notice does not end, or file contains only notice
     if (end >= content.length) {
-      console.log(`+ File ${p} only consists in a copyright comment?`);
+      console.log(`+ 2 File ${path} only consists in a copyright comment?`);
       if (content.trim() !== notice) {
-        console.log(`+ Header out-dated in ${path}. Updating...`);
+        console.log(`+ 3 Header out-dated in ${path}. Updating...`);
         return notice;
       }
       return undefined;
@@ -96,11 +104,11 @@ function checkLicenseNotice(p: string, content: string, notice: string): string 
 
     // Update notice if needed
     if (content.slice(start, end).trim() !== notice) {
-      console.log(`+ Header out-dated in ${path}. Updating...`);
+      console.log(`+ 4 Header out-dated in ${path}. Updating...`);
       return `${notice}\n\n${content.slice(end).trim()}`;
     }
   } else {
-    console.log(`+ No copyright notice in ${p}. Adding...`);
+    console.log(`+ No copyright notice in ${path}. Adding...`);
     return `${notice}\n\n${content.trim()}`;
   }
 
@@ -108,18 +116,18 @@ function checkLicenseNotice(p: string, content: string, notice: string): string 
   return undefined;
 }
 
-async function check(p: string, license: License): Promise<void> {
-  console.log('+ checking license in', p);
-  const content = await fs.readFile(p, { encoding: 'utf-8' });
-  if (p.endsWith('/LICENSE')) {
-    const fix = checkLicenseFile(p, content, license.full);
+async function check(path: string, license: License): Promise<void> {
+  console.log('+ checking license in', path, JSON.stringify(path));
+  const content = await fs.readFile(path, { encoding: 'utf-8' });
+  if (path.endsWith('/LICENSE')) {
+    const fix = checkLicenseFile(path, content, license.full);
     if (fix !== undefined) {
-      await fs.writeFile(p, fix, 'utf-8');
+      await fs.writeFile(path, fix, 'utf-8');
     }
   } else {
-    const fix = checkLicenseNotice(p, content, license.notice);
+    const fix = checkLicenseNotice(path, content, license.notice);
     if (fix !== undefined) {
-      await fs.writeFile(p, fix, 'utf-8');
+      await fs.writeFile(path, fix, 'utf-8');
     }
   }
 }
@@ -132,7 +140,7 @@ export async function checkLicenses(project: Project): Promise<void> {
 
   // If not information was given regarding license, then we ignore this check
   if (license === undefined) {
-    console.log('no license information available, not checking.');
+    console.log('! no license information available, not checking.');
     return;
   }
 
@@ -148,6 +156,6 @@ export async function checkLicenses(project: Project): Promise<void> {
       project.metalint.license.include,
       project.root,
       project.metalint.license.exclude,
-    )).map(p => check(p, license)),
+    )).map(path => check(path, license)),
   );
 }
