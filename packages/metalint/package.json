@@ -55,15 +55,16 @@
     "micromatch": "^4.0.2",
     "minimatch": "^3.0.4",
     "nunjucks": "^3.2.0",
+    "simple-git": "^1.124.0",
     "vscode-languageserver-protocol": "^3.14.1"
   },
-  "homepage": "https://github.com/cliqz/metalint#readme",
   "license": "MPL-2.0",
+  "bugs": {
+    "url": "https://github.com/cliqz/metalint/issues"
+  },
+  "homepage": "https://github.com/cliqz/metalint#readme",
   "repository": {
     "type": "git",
     "url": "git@github.com:cliqz/metalint.git"
-  },
-  "bugs": {
-    "url": "https://github.com/cliqz-oss/adblocker/issues"
   }
 }
