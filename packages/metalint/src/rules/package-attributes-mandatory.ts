@@ -41,7 +41,7 @@ export default function* packageAttributesMandatory(
         if (pkg[attribute] === undefined) {
           yield {
             code: '[pkg/attributes-mandatory]',
-            message: `sub-package '${name}' does not specify mandatory attribute '${attribute}'`,
+            message: `package '${name}' does not specify mandatory attribute '${attribute}'`,
             severity: DiagnosticSeverity.Error,
           };
         }

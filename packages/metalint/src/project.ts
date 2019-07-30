@@ -100,13 +100,14 @@ export interface Project {
   root: string;
   name: string;
   metalint: Metalint;
-  lerna: Lerna;
   pkg: Package;
-  license?: License;
   packages: Workspace[];
+
+  lerna?: Lerna;
+  license?: License;
 }
 
-async function loadListOfPackages(root: string, lerna: Lerna, npm: Package): Promise<string[]> {
+async function loadListOfPackages(root: string, lerna: Lerna | undefined, npm: Package): Promise<string[]> {
   console.debug('+ listing packages...');
   const patterns: string[] = [];
 
@@ -115,7 +116,7 @@ async function loadListOfPackages(root: string, lerna: Lerna, npm: Package): Pro
     patterns.push(...npm.workspaces);
   }
 
-  if (lerna.packages !== undefined && Array.isArray(lerna.packages)) {
+  if (lerna !== undefined && lerna.packages !== undefined && Array.isArray(lerna.packages)) {
     console.debug(' > found globs in lerna.json', lerna.packages);
     patterns.push(...lerna.packages);
   }
@@ -123,30 +124,37 @@ async function loadListOfPackages(root: string, lerna: Lerna, npm: Package): Pro
   return ([] as string[]).concat(...(await globs(patterns.map(p => p.endsWith('/') === false ? `${p}/` : p), root)));
 }
 
-async function loadPackages(root: string, lerna: Lerna, npm: Package): Promise<Workspace[]> {
-  return Promise.all(
-    (await loadListOfPackages(root, lerna, npm)).map(async (cwd) => {
-      // Load mandatory 'package.json'
-      const pkg = await loadPackageConfig(cwd);
+async function loadWorkspace(root: string): Promise<Workspace> {
+  // Load mandatory 'package.json'
+  const pkg = await loadPackageConfig(root);
 
-      // Optionally load 'tsconfig.json'
-      let tsconfig: TsConfig | undefined;
-      try {
-        tsconfig = await loadTSConfig(cwd);
-      } catch (ex) {
-        // tsconfig.json is optional in sub-packages
-      }
+  // Optionally load 'tsconfig.json'
+  let tsconfig: TsConfig | undefined;
+  try {
+    tsconfig = await loadTSConfig(root);
+  } catch (ex) {
+    // tsconfig.json is optional in sub-packages
+  }
 
-      return {
-        name: path.basename(cwd),
-        root: cwd,
+  return {
+    name: path.basename(root),
+    pkg,
+    root,
+    tsconfig,
+    // tslint,
+  };
+}
 
-        pkg,
-        tsconfig,
-        // tslint,
-      };
-    }),
-  );
+async function loadPackages(root: string, lerna: Lerna | undefined, npm: Package): Promise<Workspace[]> {
+  const workspaces = await Promise.all((await loadListOfPackages(root, lerna, npm)).map(loadWorkspace));
+
+  // If there are no sub-packages, then we consider it's a normal repository
+  // and add the root package as a workspace for linting.
+  if (workspaces.length === 0) {
+    workspaces.push(await loadWorkspace(root));
+  }
+
+  return workspaces;
 }
 
 type DependencyScope = 'peerDependencies' | 'devDependencies' | 'dependencies';
@@ -183,7 +191,7 @@ export default async function loadProject(): Promise<Readonly<Project>> {
 
   const [metalint, lerna, pkg] = await Promise.all([
     loadMetalintConfig(projectRoot),
-    loadLernaConfig(projectRoot),
+    loadLernaConfig(projectRoot).catch(() => undefined),
     loadPackageConfig(projectRoot),
   ]);
 
