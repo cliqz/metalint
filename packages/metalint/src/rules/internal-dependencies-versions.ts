@@ -14,6 +14,11 @@ import { Diagnostic, DiagnosticSeverity } from '../rules';
  * other have the same version as defined in `lerna.json`.
  */
 export default function* internalDependenciesVersions(project: Project): IterableIterator<Diagnostic> {
+  // This rule requires 'lerna.json'
+  if (project.lerna === undefined) {
+    return;
+  }
+
   if (project.lerna.version === undefined) {
     yield {
       code: '[deps/internal]',

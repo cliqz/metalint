@@ -15,6 +15,11 @@ import { Diagnostic, DiagnosticSeverity } from '../rules';
 export default function* packageFolderName(
   project: Project,
 ): IterableIterator<Diagnostic> {
+  // This rule requires 'lerna.json'
+  if (project.lerna === undefined) {
+    return;
+  }
+
   for (const { name, pkg } of project.packages) {
     const packageName = pkg.name;
 
