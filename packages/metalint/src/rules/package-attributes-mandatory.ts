@@ -18,7 +18,6 @@ const MANDATORY_ATTRIBUTES = [
   'homepage',
   'license',
   'name',
-  'publishConfig',
   'repository',
   'version',
 ];

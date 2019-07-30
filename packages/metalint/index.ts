@@ -20,6 +20,11 @@ import checkLernaWorkspaces from './src/rules/lerna-workspaces';
 import { checkLicenses } from './src/licences';
 
 async function main() {
+  const runInCI = process.argv[process.argv.length - 1] === '--ci';
+  if (runInCI === true) {
+    console.log('Running in CI mode. Auto-fix disabled.');
+  }
+
   const project = await loadProject();
   const rules: Rule[] = [
     checkInternalDependenciesVersions,
@@ -32,10 +37,13 @@ async function main() {
     checkLernaAttributes,
   ];
 
+  let numberOfErrors = 0;
+
   // TODO - make optional
   for await (const diagnostic of checkLicenses(project)) {
+    numberOfErrors += 1;
     console.log(`- ${diagnostic.code} ${diagnostic.message}`);
-    if (diagnostic.fix !== undefined) {
+    if (diagnostic.fix !== undefined && runInCI === false) {
       console.log('  ~ auto-fixing!');
       await applyFix(diagnostic.fix);
     }
@@ -45,12 +53,18 @@ async function main() {
   console.log('start linting...');
   for (const rule of rules) {
     for (const diagnostic of rule(project)) {
+      numberOfErrors += 1;
       console.log(`- ${diagnostic.code} ${diagnostic.message}`);
-      if (diagnostic.fix !== undefined) {
+      if (diagnostic.fix !== undefined && runInCI === false) {
         console.log('  ~ auto-fixing!');
         await applyFix(diagnostic.fix);
       }
     }
+  }
+
+  // Return non-zero error code if warnings were emitted
+  if (numberOfErrors !== 0) {
+    process.exit(1);
   }
 }
 
