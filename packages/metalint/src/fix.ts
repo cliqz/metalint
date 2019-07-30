@@ -19,7 +19,7 @@ export interface FixReplaceJsonAttribute {
   type: 'replace-json-attribute';
   path: string;
   attribute: [string] | string;
-  value: string;
+  value: any;
 }
 
 // TODO - allow fix to replace section of existing file

@@ -6,6 +6,9 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  */
 
+import { join } from 'path';
+
+import { Fix } from '../fix';
 import { Project } from '../project';
 import { Diagnostic, DiagnosticSeverity } from '../rules';
 
@@ -24,7 +27,7 @@ export default function* packageAttributesConsistency(
   // Store set of attributes to ignore
   const ignoreAttributes: Set<string> = new Set();
 
-  for (const { name, pkg } of project.packages) {
+  for (const { name, pkg, root } of project.packages) {
     if (
       project.metalint.workspaces !== undefined &&
       project.metalint.workspaces.pkg !== undefined
@@ -34,15 +37,24 @@ export default function* packageAttributesConsistency(
         const normalizedValue = JSON.stringify(pkg[attribute]);
         const normalizedExpected = JSON.stringify(value);
 
+        const fix: Fix = {
+          attribute,
+          path: join(root, 'package.json'),
+          type: 'replace-json-attribute',
+          value: value === null ? undefined : value,
+        };
+
         if (value === null && pkg[attribute] !== undefined) {
           yield {
             code: '[pkg/attributes-consistency]',
+            fix,
             message: `sub-package '${name}' defines disabled attribute '${attribute}', got ${normalizedValue}`,
             severity: DiagnosticSeverity.Error,
           };
         } else if (value !== null && pkg[attribute] === undefined) {
           yield {
             code: '[pkg/attributes-consistency]',
+            fix,
             message: `sub-package '${name}' does not define attribute '${attribute}', expected ${normalizedExpected}`,
             severity: DiagnosticSeverity.Error,
           };
@@ -50,6 +62,7 @@ export default function* packageAttributesConsistency(
           if (normalizedValue !== normalizedExpected) {
             yield {
               code: '[pkg/attributes-consistency]',
+              fix,
               message: `sub-package '${name}' attribute ${attribute} mismatch: got ${normalizedValue}, expected ${normalizedExpected}`,
               severity: DiagnosticSeverity.Error,
             };
