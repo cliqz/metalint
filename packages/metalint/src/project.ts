@@ -13,6 +13,7 @@ import { AJSONSchemaForLernaJsonFiles as Lerna } from '@schemastore/lerna';
 import { JSONSchemaForNPMPackageJsonFiles as Package } from '@schemastore/package';
 import { JSONSchemaForTheTypeScriptCompilerSConfigurationFile as TsConfig } from '@schemastore/tsconfig';
 import { JSONSchemaForTheTSLintConfigurationFiles as Tslint } from '@schemastore/tslint';
+import getGit from 'simple-git/promise';
 
 import { fileExists, globs } from './fs-utils';
 import { loadLicense } from './licences';
@@ -91,6 +92,17 @@ interface Workspace {
   tsconfig?: TsConfig;
 }
 
+interface Git {
+  homepage: string;
+  bugs: {
+    url: string;
+  };
+  repository: {
+    type: 'git';
+    url: string;
+  };
+}
+
 export interface License {
   notice: string;
   full: string;
@@ -103,8 +115,50 @@ export interface Project {
   pkg: Package;
   packages: Workspace[];
 
+  git?: Git;
   lerna?: Lerna;
   license?: License;
+}
+
+async function getGitInformation(root: string): Promise<Git | undefined> {
+  const git = getGit(root);
+  if ((await git.checkIsRepo()) === false) {
+    return undefined;
+  }
+
+  let upstream: string | undefined;
+  for (const { name, refs: { fetch } } of await git.getRemotes(true)) {
+    if (name === 'upstream') {
+      upstream = fetch;
+    }
+
+    if (name === 'origin' && upstream === undefined) {
+      upstream = fetch;
+    }
+  }
+
+  // Only support Github for now
+  if (upstream !== undefined && upstream.includes('github.com')) {
+    let url = upstream;
+    if (url.endsWith('.git')) {
+      url = url.slice(0, -4);
+    }
+
+    if (url.startsWith('git@github.com:')) {
+      url = `https://github.com/${url.slice(15)}`;
+    }
+
+    return {
+      bugs: { url: `${url}/issues` },
+      homepage: `${url}#readme`,
+      repository: {
+        type: 'git',
+        url: upstream,
+      },
+    };
+  }
+
+  return undefined;
 }
 
 async function loadListOfPackages(root: string, lerna: Lerna | undefined, npm: Package): Promise<string[]> {
@@ -189,6 +243,9 @@ export default async function loadProject(): Promise<Readonly<Project>> {
   const projectRoot = await findProjectRoot();
   const projectName = path.basename(projectRoot);
 
+  // Load git information if available
+  const git: Git | undefined = await getGitInformation(projectRoot);
+
   const [metalint, lerna, pkg] = await Promise.all([
     loadMetalintConfig(projectRoot),
     loadLernaConfig(projectRoot).catch(() => undefined),
@@ -207,6 +264,8 @@ export default async function loadProject(): Promise<Readonly<Project>> {
   return {
     name: projectName,
     root: projectRoot,
+
+    git,
 
     // metalint config
     metalint,

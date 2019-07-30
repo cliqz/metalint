@@ -14,15 +14,7 @@
   "workspaces": {
     "pkg": {
       "author": "Cliqz",
-      "homepage": "https://github.com/cliqz/metalint#readme",
-      "license": "MPL-2.0",
-      "repository": {
-        "type": "git",
-        "url": "git@github.com:cliqz/metalint.git"
-      },
-      "bugs": {
-        "url": "https://github.com/cliqz-oss/adblocker/issues"
-      }
+      "license": "MPL-2.0"
     }
   }
 }
