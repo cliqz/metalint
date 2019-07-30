@@ -1,0 +1,27 @@
+trigger:
+  - master
+
+pool:
+  vmImage: 'ubuntu-16.04'
+
+steps:
+#Node Install
+- task: NodeTool@0
+  displayName: Node install
+  inputs:
+    versionSpec: '11.x'
+
+- script: curl -o- -L https://yarnpkg.com/install.sh | bash
+  displayName: 'Install Yarn'
+
+- script: yarn bootstrap
+  displayName: 'Boostraping the project'
+
+- script: yarn build
+  displayName: 'Building packages'
+
+- script: yarn lint
+  displayName: 'Linting packages'
+
+- script: ./node_modules/.bin/metalint --ci
+  displayName: 'Meta-linting project'
