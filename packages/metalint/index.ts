@@ -12,6 +12,10 @@ import checkPackageAttributesMandatory from './src/rules/package-attributes-mand
 import checkPackageFolderName from './src/rules/package-folder-name';
 import checkPackageNamespaceConsistency from './src/rules/package-namespace-consistency';
 
+// Rules - lerna
+import checkLernaAttributes from './src/rules/lerna-unknown-attributes';
+import checkLernaWorkspaces from './src/rules/lerna-workspaces';
+
 // Rule - license
 import { checkLicenses } from './src/licences';
 
@@ -24,6 +28,8 @@ async function main() {
     checkPackageNamespaceConsistency,
     checkPackageAttributesConsistency,
     checkPackageAttributesMandatory,
+    checkLernaWorkspaces,
+    checkLernaAttributes,
   ];
 
   // TODO - make optional
