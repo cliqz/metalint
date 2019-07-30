@@ -1,14 +1,15 @@
 {
   "name": "@cliqz/metalint",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "description": "Lint all the things",
   "author": "Cliqz",
   "main": "dist/cjs/index.js",
-  "module": "dist/es6/index.js",
   "types": "dist/types/index.d.ts",
   "files": [
     "LICENSE",
-    "dist"
+    "dist",
+    "cli",
+    "licenses"
   ],
   "bin": {
     "metalint": "cli/index.js"
@@ -18,7 +19,7 @@
     "lint": "tslint --config ../../tslint.json --project ./tsconfig.json",
     "build": "tsc --build ./tsconfig.json",
     "watch": "tsc --build ./tsconfig.json --watch",
-    "prepack": "yarn run bundle",
+    "prepack": "yarn run build",
     "test": "jest --config ./jest.config.js --coverage ./test/"
   },
   "devDependencies": {

@@ -2,6 +2,5 @@
 
 'use strict';
 
-const metalint = require('..');
-
-metalint();
+const path = require('path');
+require(path.join(__dirname, '..'));

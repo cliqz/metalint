@@ -19,9 +19,7 @@
   "scripts": {
     "bootstrap": "npx lerna bootstrap",
     "lint": "lerna run --parallel lint",
-    "watch": "tsc --build ./packages/tsconfig.project.json --watch",
-    "build": "tsc --build ./packages/tsconfig.project.json",
-    "bundle": "lerna run bundle",
+    "build": "lerna run build",
     "test": "lerna run --concurrency 1 test",
     "clean": "lerna run --parallel clean && lerna clean --yes && rimraf node_modules"
   },
