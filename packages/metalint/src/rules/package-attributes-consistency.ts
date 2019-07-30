@@ -91,12 +91,14 @@ export default function* packageAttributesConsistency(
       const values: Set<string> = new Set();
       const found: string[] = [];
       for (const { name, pkg } of project.packages) {
-        const normalizedValue = JSON.stringify(pkg[attribute]);
-        values.add(normalizedValue);
-        found.push(`${name}/package.json[${attribute}]=${normalizedValue}`);
+        if (pkg[attribute] !== undefined) {
+          const normalizedValue = JSON.stringify(pkg[attribute]);
+          values.add(normalizedValue);
+          found.push(`${name}/package.json[${attribute}]=${normalizedValue}`);
+        }
       }
 
-      if (values.size !== 1) {
+      if (values.size > 1) {
         yield {
           code: '[pkg/attributes-consistency]',
           message: `sub-packages have inconsistent values for attribute ${attribute}: ${found.join(', ')}`,

@@ -50,13 +50,11 @@ async function findProjectRoot(): Promise<string> {
 }
 
 async function loadConfig<T>(name: string, root: string): Promise<T> {
-  console.debug('+ loading config', name);
   const configPath = path.join(root, name);
   const configExists = await fileExists(configPath);
 
   if (configExists === false) {
-    console.error(`could not find ${name} in workspace ${root}, abort!`);
-    process.exit(0);
+    throw new Error(`could not find ${name} in workspace ${root}, abort!`);
   }
 
   const config: T = JSON.parse(await fs.readFile(configPath, 'utf-8'));
@@ -90,7 +88,7 @@ interface Workspace {
 
   tslint?: Tslint;
   pkg: Package;
-  tsconfig: TsConfig;
+  tsconfig?: TsConfig;
 }
 
 export interface License {
@@ -128,11 +126,16 @@ async function loadListOfPackages(root: string, lerna: Lerna, npm: Package): Pro
 async function loadPackages(root: string, lerna: Lerna, npm: Package): Promise<Workspace[]> {
   return Promise.all(
     (await loadListOfPackages(root, lerna, npm)).map(async (cwd) => {
-      const [pkg, tsconfig] = await Promise.all([
-        // loadTslintConfig(cwd),
-        loadPackageConfig(cwd),
-        loadTSConfig(cwd),
-      ]);
+      // Load mandatory 'package.json'
+      const pkg = await loadPackageConfig(cwd);
+
+      // Optionally load 'tsconfig.json'
+      let tsconfig: TsConfig | undefined;
+      try {
+        tsconfig = await loadTSConfig(cwd);
+      } catch (ex) {
+        // tsconfig.json is optional in sub-packages
+      }
 
       return {
         name: path.basename(cwd),
