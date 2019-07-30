@@ -13,6 +13,7 @@ import nunjucks from 'nunjucks';
 
 import { fileExists, globs } from './fs-utils';
 import { License, Project } from './project';
+import { Diagnostic, DiagnosticSeverity } from './rules';
 
 /**
  * Get license template from static assets and generate `full` + `notice`
@@ -53,14 +54,12 @@ export async function loadLicense({
 /**
  * Make sure that LICENSE file is up-to-date.
  */
-function checkLicenseFile(path: string, content: string, full: string): string | undefined {
-  // TODO detect if some sub-package does not have a LICENSE file
+function checkLicenseFile(content: string, full: string): string | undefined {
+  // TODO detect if some sub-package does not have a LICENSE file at all
   if (content.trim() !== full) {
-    console.log(`+ File ${path} is out-dated. Updating...`);
     return full;
   }
 
-  console.log('+ LICENSE is up-to-date!', path);
   return undefined;
 }
 
@@ -77,17 +76,15 @@ function checkLicenseNotice(path: string, content: string, notice: string): stri
 
   // Check if what comes next is a copyright long comment: /*!
   if (
-    content.charCodeAt(start) === 47 && /* '/' */
-    content.charCodeAt(start + 1) === 42 && /* '*' */
+    content.charCodeAt(start) === 47 /* '/' */ &&
+    content.charCodeAt(start + 1) === 42 /* '*' */ &&
     content.charCodeAt(start + 2) === 33 /* '!' */
   ) {
     // detect end of notice
     let end = start + 3;
     while (
-      end < content.length && !(
-        content.charCodeAt(end) === 42 && /* '*' */
-        content.charCodeAt(end + 1) === 47 /* '/' */
-      )
+      end < content.length &&
+      !(content.charCodeAt(end) === 42 /* '*' */ && content.charCodeAt(end + 1) === 47) /* '/' */
     ) {
       end += 1;
     }
@@ -98,7 +95,6 @@ function checkLicenseNotice(path: string, content: string, notice: string): stri
     if (end >= content.length) {
       console.log(`+ File ${path} only consists in a copyright comment?`);
       if (content.trim() !== notice) {
-        console.log(`+ Header out-dated in ${path}. Updating...`);
         return `${notice}`;
       }
       return undefined;
@@ -106,37 +102,59 @@ function checkLicenseNotice(path: string, content: string, notice: string): stri
 
     // Update notice if needed
     if (content.slice(start, end).trim() !== notice) {
-      console.log(`+ Header out-dated in ${path}. Updating...`);
       return `${notice}\n\n${content.slice(end).trim()}\n`;
     }
   } else {
-    console.log(`+ No copyright notice in ${path}. Adding...`);
     return `${notice}\n\n${content.trim()}\n`;
   }
 
-  console.log('+ Header is up-to-date!', path);
   return undefined;
 }
 
-async function check(path: string, license: License): Promise<void> {
+/**
+ * Given a path, make sure that notice is up-to-date.
+ */
+async function check(path: string, license: License): Promise<Diagnostic | undefined> {
   const content = await fs.readFile(path, { encoding: 'utf-8' });
   if (path.endsWith('/LICENSE')) {
-    const fix = checkLicenseFile(path, content, license.full);
+    const fix = checkLicenseFile(content, license.full);
     if (fix !== undefined) {
-      await fs.writeFile(path, fix, 'utf-8');
+      return {
+        code: '[license/main]',
+        message: `LICENSE out-dated: ${path}`,
+        severity: DiagnosticSeverity.Error,
+
+        fix: {
+          content: fix,
+          path,
+          type: 'replace-file',
+        }
+      };
     }
   } else {
     const fix = checkLicenseNotice(path, content, license.notice);
     if (fix !== undefined) {
-      await fs.writeFile(path, fix, 'utf-8');
+      return {
+        code: '[license/notice]',
+        message: `license notice out-dated: ${path}`,
+        severity: DiagnosticSeverity.Error,
+
+        fix: {
+          content: fix,
+          path,
+          type: 'replace-file',
+        }
+      };
     }
   }
+
+  return undefined;
 }
 
 /**
  * Check that all licenses are up-to-date.
  */
-export async function checkLicenses(project: Project): Promise<void> {
+export async function* checkLicenses(project: Project): AsyncIterableIterator<Diagnostic> {
   const license: License | undefined = project.license;
 
   // If not information was given regarding license, then we ignore this check
@@ -152,11 +170,13 @@ export async function checkLicenses(project: Project): Promise<void> {
   }
 
   // List all files and check their license
-  await Promise.all(
-    (await globs(
-      project.metalint.license.include,
-      project.root,
-      project.metalint.license.exclude,
-    )).map(path => check(path, license)),
-  );
+  for (const diagnostic of (await Promise.all((await globs(
+    project.metalint.license.include,
+    project.root,
+    project.metalint.license.exclude,
+  )).map((path) => check(path, license))))) {
+    if (diagnostic !== undefined) {
+      yield diagnostic;
+    }
+  }
 }

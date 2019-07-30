@@ -1,3 +1,4 @@
+import { applyFix } from './src/fix';
 import loadProject from './src/project';
 import { Rule } from './src/rules';
 
@@ -26,13 +27,23 @@ async function main() {
   ];
 
   // TODO - make optional
-  await checkLicenses(project);
+  for await (const diagnostic of checkLicenses(project)) {
+    console.log(`- ${diagnostic.code} ${diagnostic.message}`);
+    if (diagnostic.fix !== undefined) {
+      console.log('  ~ auto-fixing!');
+      await applyFix(diagnostic.fix);
+    }
+  }
 
   console.log();
   console.log('start linting...');
   for (const rule of rules) {
-    for (const warning of rule(project)) {
-      console.log(`- ${warning.code} ${warning.message}`);
+    for (const diagnostic of rule(project)) {
+      console.log(`- ${diagnostic.code} ${diagnostic.message}`);
+      if (diagnostic.fix !== undefined) {
+        console.log('  ~ auto-fixing!');
+        await applyFix(diagnostic.fix);
+      }
     }
   }
 }

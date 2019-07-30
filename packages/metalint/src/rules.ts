@@ -12,24 +12,16 @@
 // import { Diagnostic, DiagnosticSeverity, Range } from 'vscode-languageserver-protocol';
 import { DiagnosticSeverity } from 'vscode-languageserver-protocol';
 
+import { Fix } from './fix';
 import { Project } from './project';
 
-// export interface Fix {
-// }
-//
-// export interface Rule {
-//   name: string;
-//   glob: string[];
-//
-//
-// }
-
-interface Diagnostic {
+export interface Diagnostic {
   severity?: DiagnosticSeverity;
   code?: string;
   message: string;
+  fix?: Fix;
 }
 
-type Rule = (project: Project) => IterableIterator<Diagnostic>;
+export type Rule = (project: Project) => IterableIterator<Diagnostic>;
 
-export { Diagnostic, Rule, DiagnosticSeverity };
+export { DiagnosticSeverity };
