@@ -78,7 +78,6 @@ export default function* packageAttributesConsistency(
     'browser',
     'bugs',
     'contributors',
-    'files',
     'homepage',
     'license',
     'main',
