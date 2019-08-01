@@ -12,17 +12,20 @@ import { Fix } from '../fix';
 import { Project } from '../project';
 import { Diagnostic, DiagnosticSeverity } from '../rules';
 
-const MANDATORY_ATTRIBUTES = [
+const MANDATORY_ATTRIBUTES_PRIVATE = [
   'author',
-  'bugs',
-  'contributors',
   'description',
-  'files',
   'homepage',
   'license',
   'name',
   'repository',
-  'version',
+];
+
+const MANDATORY_ATTRIBUTES = [
+  ...MANDATORY_ATTRIBUTES_PRIVATE,
+  'bugs',
+  'files',
+  'repository',
 ];
 
 /**
@@ -39,7 +42,9 @@ export default function* packageAttributesMandatory(
       ) ? Object.keys(project.metalint.workspaces.pkg) : []
     );
 
-    for (const attribute of MANDATORY_ATTRIBUTES) {
+    const mandatoryAttributes = pkg.private === true ? MANDATORY_ATTRIBUTES_PRIVATE : MANDATORY_ATTRIBUTES;
+
+    for (const attribute of mandatoryAttributes) {
       if (ignoredAttributes.has(attribute) === false) {
         if (pkg[attribute] === undefined) {
           let fix: undefined | Fix;

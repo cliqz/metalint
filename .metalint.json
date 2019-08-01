@@ -13,7 +13,7 @@
   },
   "workspaces": {
     "pkg": {
-      "author": "Cliqz",
+      "author": { "name": "Cliqz" },
       "license": "MPL-2.0"
     }
   }

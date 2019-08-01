@@ -84,6 +84,7 @@ async function loadPackageConfig(root: string): Promise<Package> {
 }
 
 interface Workspace {
+  subWorkspace: boolean;
   root: string;
   name: string;
 
@@ -178,7 +179,7 @@ async function loadListOfPackages(root: string, lerna: Lerna | undefined, npm: P
   return ([] as string[]).concat(...(await globs(patterns.map(p => p.endsWith('/') === false ? `${p}/` : p), root)));
 }
 
-async function loadWorkspace(root: string): Promise<Workspace> {
+async function loadWorkspace(root: string, subWorkspace: boolean = true): Promise<Workspace> {
   // Load mandatory 'package.json'
   const pkg = await loadPackageConfig(root);
 
@@ -194,19 +195,17 @@ async function loadWorkspace(root: string): Promise<Workspace> {
     name: path.basename(root),
     pkg,
     root,
+    subWorkspace,
     tsconfig,
     // tslint,
   };
 }
 
 async function loadPackages(root: string, lerna: Lerna | undefined, npm: Package): Promise<Workspace[]> {
-  const workspaces = await Promise.all((await loadListOfPackages(root, lerna, npm)).map(loadWorkspace));
+  const workspaces = await Promise.all((await loadListOfPackages(root, lerna, npm)).map((p: string) => loadWorkspace(p, true)));
 
-  // If there are no sub-packages, then we consider it's a normal repository
-  // and add the root package as a workspace for linting.
-  if (workspaces.length === 0) {
-    workspaces.push(await loadWorkspace(root));
-  }
+  // root workspace is always added
+  workspaces.push(await loadWorkspace(root, false));
 
   return workspaces;
 }

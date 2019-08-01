@@ -23,6 +23,9 @@ export interface FixReplaceJsonAttribute {
 }
 
 // TODO - allow fix to replace section of existing file
+// TODO - apply fixes by batch, grouping all modifications on the same file +
+// detecting impossible fixing (e.g.: change attribute + replace file at the
+// same time, or two file replacements on the same file)
 
 export type Fix = FixReplaceFile | FixReplaceJsonAttribute;
 
