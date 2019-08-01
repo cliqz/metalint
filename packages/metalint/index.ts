@@ -11,6 +11,7 @@ import checkPackageAttributesConsistency from './src/rules/package-attributes-co
 import checkPackageAttributesMandatory from './src/rules/package-attributes-mandatory';
 import checkPackageFolderName from './src/rules/package-folder-name';
 import checkPackageNamespaceConsistency from './src/rules/package-namespace-consistency';
+import checkPackageNormalization from './src/rules/package-normalize';
 
 // Rules - lerna
 import checkLernaAttributes from './src/rules/lerna-unknown-attributes';
@@ -27,12 +28,20 @@ async function main() {
 
   const project = await loadProject();
   const rules: Rule[] = [
+    // dependencies
     checkInternalDependenciesVersions,
     checkExternalDependenciesVersions,
+
+    // naming consistency
     checkPackageFolderName,
     checkPackageNamespaceConsistency,
-    checkPackageAttributesConsistency,
+
+    // check that mandatory fields exist + consistency
     checkPackageAttributesMandatory,
+    checkPackageAttributesConsistency,
+    checkPackageNormalization,
+
+    // Lerna
     checkLernaWorkspaces,
     checkLernaAttributes,
   ];

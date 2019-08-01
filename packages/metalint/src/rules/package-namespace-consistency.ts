@@ -20,13 +20,15 @@ export default function* packageNamespaceConsistency(
   // TODO - allow to specify value in `.metalint.json`
   // Collect namespaces of all sub-packages
   for (const { pkg } of project.packages) {
-    const packageName = pkg.name;
-    if (packageName !== undefined) {
-      const parts = packageName.split('/');
-      namespaces.push({
-        name: packageName,
-        namespace: parts.slice(0, -1).join('/'),
-      });
+    if (pkg.private !== true) {
+      const packageName = pkg.name;
+      if (packageName !== undefined) {
+        const parts = packageName.split('/');
+        namespaces.push({
+          name: packageName,
+          namespace: parts.slice(0, -1).join('/'),
+        });
+      }
     }
   }
 
