@@ -1120,10 +1120,10 @@
   resolved "https://registry.yarnpkg.com/@schemastore/lerna/-/lerna-0.0.1.tgz#870359d6c09e836e92a4dbb28c1406c749534e8a"
   integrity sha512-KJYAUfG8pkbDb01Gavxj1DjNPwLK8jA4UiFCa/BLgoveSuKK51CSs/toT2KHtIGRQ6a/XVBP9HTmrmBtrs0SCA==
 
-"@schemastore/package@^0.0.4":
-  version "0.0.4"
-  resolved "https://registry.yarnpkg.com/@schemastore/package/-/package-0.0.4.tgz#d8649baf5fa2d77ff5f5a5a5a34383a2cfc652e6"
-  integrity sha512-t2uwqT6F9h7XXrTEfIgSKheNcc/1SpB78MysNRq7N+NsL2xcPF0cGKSJC2Z4yWoE3S+2Ayi1NdGh9FvsxlonnQ==
+"@schemastore/package@^0.0.5":
+  version "0.0.5"
+  resolved "https://registry.yarnpkg.com/@schemastore/package/-/package-0.0.5.tgz#67b621d5c833ad2d5a29a1acf868717b7839bb8a"
+  integrity sha512-0XEiMT/Rh8I0SEIO81fo5MN3AHhONFv9SJ1IIJ5OTI3PN/jG032OPlHUMxvrun7yc6YUGtufVg2WPQVK8PaH5Q==
 
 "@schemastore/tsconfig@^0.0.5":
   version "0.0.5"
