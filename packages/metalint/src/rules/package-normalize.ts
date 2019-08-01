@@ -25,13 +25,17 @@ function deepEqual(obj1: any, obj2: any): boolean {
 /**
  * Apply normalization to package.json using 'normalize-package-data' used by npm.
  */
-export default function* packageNormalize(
-  project: Project,
-): IterableIterator<Diagnostic> {
+export default function* packageNormalize(project: Project): IterableIterator<Diagnostic> {
   if (project.packages.length === 0) {
     return;
   }
 
+  // Only auto-fix attributes which are not specified in '.metalint.json'
+  const attributeBlacklist: Set<string> = new Set(
+    Object.keys((project.metalint.workspaces && project.metalint.workspaces.pkg) || {}),
+  );
+
+  // Collect extra warnings
   const normalizationWarnings: string[] = [];
   const warn = (warning: string): void => {
     // Ignore warnings about 'readme' attribute
@@ -57,7 +61,10 @@ export default function* packageNormalize(
 
     // Compare what changed
     for (const [attribute, value] of Object.entries(pkg)) {
-      if (deepEqual(normalized[attribute], value) === false) {
+      if (
+        attributeBlacklist.has(attribute) === false &&
+        deepEqual(normalized[attribute], value) === false
+      ) {
         yield {
           code: '[pkg/normalize]',
           fix: {
@@ -66,7 +73,9 @@ export default function* packageNormalize(
             type: 'replace-json-attribute',
             value: normalized[attribute],
           },
-          message: `package attribute ${attribute} needs to be normalized: ${JSON.stringify(normalized[attribute])}`,
+          message: `package attribute ${attribute} needs to be normalized: ${JSON.stringify(
+            normalized[attribute],
+          )}`,
           severity: DiagnosticSeverity.Error,
         };
       }
