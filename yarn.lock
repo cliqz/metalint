@@ -1150,10 +1150,10 @@
   resolved "https://registry.yarnpkg.com/@schemastore/tsconfig/-/tsconfig-0.0.5.tgz#c8f8047604371ce968d2d38b107538cbef57ffde"
   integrity sha512-Yc8WW4joDwjCAbB6n1xZELPsy3jGKEY0ANs6/KWSYlnWyCUk04Rpge1X4f0blBt1ATvUc4RyuEYZRVXfJI7WIQ==
 
-"@schemastore/tslint@^0.0.6":
-  version "0.0.6"
-  resolved "https://registry.yarnpkg.com/@schemastore/tslint/-/tslint-0.0.6.tgz#c871e3277ec3dda11e5f00b77ed08dcda7dc4f93"
-  integrity sha512-KUKQAazQ5kYw3dEvUSCZlrgYIvAJC+y3SN0IJXOgFAwiaGBsAa1NOV34+uzGCA7opcqEAl36RXAtapPxzVWGtg==
+"@schemastore/tslint@^0.0.7":
+  version "0.0.7"
+  resolved "https://registry.yarnpkg.com/@schemastore/tslint/-/tslint-0.0.7.tgz#228acca6aa18c1e10a7917b52dba585fa3779e61"
+  integrity sha512-JLV3956owJH+AWMqKsgSytQ8TltI3vYkwYOj/DrYR27tlEKSKSoYQrCCQ7ryMXBrECNDMDpSaPFh7R8jUC59uA==
 
 "@types/babel__core@^7.1.0":
   version "7.1.2"
