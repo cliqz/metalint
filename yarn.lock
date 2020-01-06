@@ -1152,10 +1152,10 @@
   resolved "https://registry.yarnpkg.com/@schemastore/package/-/package-0.0.5.tgz#67b621d5c833ad2d5a29a1acf868717b7839bb8a"
   integrity sha512-0XEiMT/Rh8I0SEIO81fo5MN3AHhONFv9SJ1IIJ5OTI3PN/jG032OPlHUMxvrun7yc6YUGtufVg2WPQVK8PaH5Q==
 
-"@schemastore/tsconfig@^0.0.5":
-  version "0.0.5"
-  resolved "https://registry.yarnpkg.com/@schemastore/tsconfig/-/tsconfig-0.0.5.tgz#c8f8047604371ce968d2d38b107538cbef57ffde"
-  integrity sha512-Yc8WW4joDwjCAbB6n1xZELPsy3jGKEY0ANs6/KWSYlnWyCUk04Rpge1X4f0blBt1ATvUc4RyuEYZRVXfJI7WIQ==
+"@schemastore/tsconfig@^0.0.7":
+  version "0.0.7"
+  resolved "https://registry.yarnpkg.com/@schemastore/tsconfig/-/tsconfig-0.0.7.tgz#1fa2db04c1d80024f9978317679755de948ca997"
+  integrity sha512-gwIrf3cUN6kVSSJoNgV4L/gORHstGbNFULVybZ0dPVQ6ZLfZNyz5JaHS4h3omRnKajw5bole1G405J84uREdqQ==
 
 "@schemastore/tslint@^0.0.8":
   version "0.0.8"

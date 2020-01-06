@@ -37,7 +37,7 @@
     "@ampproject/rollup-plugin-closure-compiler": "^0.18.1",
     "@schemastore/lerna": "^0.0.1",
     "@schemastore/package": "^0.0.5",
-    "@schemastore/tsconfig": "^0.0.5",
+    "@schemastore/tsconfig": "^0.0.7",
     "@schemastore/tslint": "^0.0.8",
     "@types/glob": "^7.1.1",
     "@types/jest": "^24.0.15",
