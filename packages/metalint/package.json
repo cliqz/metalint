@@ -34,7 +34,7 @@
     "test": "jest --config ./jest.config.js --coverage ./test/"
   },
   "devDependencies": {
-    "@ampproject/rollup-plugin-closure-compiler": "^0.18.1",
+    "@ampproject/rollup-plugin-closure-compiler": "^0.24.0",
     "@schemastore/lerna": "^0.0.1",
     "@schemastore/package": "^0.0.5",
     "@schemastore/tsconfig": "^0.0.5",
