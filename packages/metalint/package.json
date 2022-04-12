@@ -63,7 +63,7 @@
     "minimatch": "^3.0.4",
     "normalize-package-data": "^2.5.0",
     "nunjucks": "^3.2.0",
-    "simple-git": "^1.124.0",
+    "simple-git": "^3.5.0",
     "vscode-languageserver-protocol": "^3.14.1"
   },
   "license": "MPL-2.0",
